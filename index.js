@@ -3,5 +3,5 @@ module.exports = {
   inflate: require('./inflate.js'),
   deflate: require('./deflate.js'),
   sha1: require('./sha1.js'),
-  bops: require('bops')
+  bops: require('./bops.js')
 };
