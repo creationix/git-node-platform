@@ -16,5 +16,8 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/creationix/git-node-platform/issues"
+  },
+  "dependencies": {
+    "ssh2": "~0.2.12"
   }
 }
