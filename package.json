@@ -1,6 +1,6 @@
 {
   "name": "git-node-platform",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A js-git platform implementation for node.js",
   "main": "index.js",
   "repository": {
