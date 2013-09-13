@@ -1,6 +1,5 @@
 var Connection = require('ssh2');
 var wrapStream = require('./ssh-stream.js').wrapStream;
-var Duplex = require('stream').Duplex;
 var trace = require('./trace.js');
 
 module.exports = function (opts, callback) {
@@ -43,7 +42,7 @@ module.exports = function (opts, callback) {
     clear();
     callback(null, {
       exec: exec,
-      close: close
+      close: closeSsh
     });
   }
 
@@ -56,7 +55,7 @@ module.exports = function (opts, callback) {
     });
   }
 
-  function close(callback) {
+  function closeSsh(callback) {
     c.end(callback);
   }
 
