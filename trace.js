@@ -16,7 +16,8 @@ if (process.env.TRACE) {
   };
 
   module.exports = function (type, stream, item) {
-    var message = messages[type];
+    var message = messages[type] || type;
+
     if (!message) return stream;
     if (!stream) {
       return console.log(message, inspect(item, {colors:true}));
