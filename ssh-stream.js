@@ -41,13 +41,14 @@ function streamToSource(stream) {
       emit = null;
       callback.apply(null, dataQueue.shift());
     }
-
-    if (dataQueue.length && !emit) {
-      stream.pause();
-    }
-    else if (!dataQueue.length && emit) {
-      stream.resume();
-    }
+    if (!stream.readable) return;
+    // DISABLED because causes ssh2 to be unreliable.
+    // if (dataQueue.length && !emit) {
+    //   stream.pause();
+    // }
+    // else if (!dataQueue.length && emit) {
+    //   stream.resume();
+    // }
   }
 
   return { read: streamRead, abort: streamAbort };
@@ -88,12 +89,11 @@ function streamToSink(writable) {
     function onRead(err, chunk) {
       if (chunk === undefined) {
         writable.end();
-        writable.once("close", function () {
-          callback(err);
+        return writable.once("close", function () {
+          return callback(err);
         });
-        return;
       }
-      writable.write(chunk)
+      writable.write(chunk);
       if (sync === undefined) sync = true;
       else start();
     }

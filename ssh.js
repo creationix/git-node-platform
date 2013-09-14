@@ -8,39 +8,36 @@ module.exports = function (opts, callback) {
     port: opts.port,
   };
   var parts = opts.auth && opts.auth.split(":") || [];
-  if (parts[0]) {
-    config.username = parts[0];
-  }
-  else {
-    config.username = process.env.USER || process.env.USERNAME;
-  }
-  if (parts[1]) {
-    config.password = parts[1];
-  }
-  else if (opts.privateKey) {
-    config.privateKey = opts.privateKey;
-  }
+  var username = config.username || parts[0];
+  var password = config.password || parts[1];
+  if (username) config.username = username;
+  else config.username = process.env.USER || process.env.USERNAME;
+  if (password) config.password = password;
+  else if (opts.privateKey) config.privateKey = opts.privateKey;
   else {
     config.privateKey = require('fs').readFileSync(process.env.HOME + "/.ssh/id_rsa");
   }
   if (opts.pathname.substr(0, 2) === "/:") opts.pathname = opts.pathname.substr(2);
 
-  var c = new Connection();
-  c.on("ready", onReady);
-  c.on("error", onError);
-  c.connect(config);
+  var conn = new Connection();
+  conn.on("ready", onReady);
+  conn.on("error", onError);
+  return conn.connect(config);
+
   function clear() {
-    c.removeListener("ready", onReady);
-    c.removeListener("error", onError);
+    conn.removeListener("ready", onReady);
+    conn.removeListener("error", onError);
   }
+
   function onError(err) {
     clear();
-    callback(err);
+    return callback(err);
   }
+
   function onReady() {
     if (trace) trace("connect", null, config.username + "@" + config.host + ":" + config.port);
     clear();
-    callback(null, {
+    return callback(null, {
       exec: exec,
       close: closeSsh
     });
@@ -49,14 +46,14 @@ module.exports = function (opts, callback) {
   function exec(command, callback) {
     command += " " + opts.pathname;
     if (trace) trace("exec", null, command);
-    c.exec(command, function (err, stream) {
+    return conn.exec(command, function (err, stream) {
       if (err) return callback(err);
       callback(null, wrapStream(stream));
     });
   }
 
   function closeSsh(callback) {
-    c.end(callback);
+    return conn.end(callback);
   }
 
 };
